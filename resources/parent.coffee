@@ -3,6 +3,7 @@
 hadoken or= {}
 
 ifrm = document.createElement "IFRAME"
+ifrm.style.display = "none"
 src = "http://#{hadoken.host}:#{hadoken.port}#{hadoken.path}"
 ifrm.setAttribute "src", src
 document.body.appendChild ifrm
