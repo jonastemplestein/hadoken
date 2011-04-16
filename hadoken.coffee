@@ -30,6 +30,7 @@ default_opts =
         'xhr-polling'
         'jsonp-polling'
       ]
+      rememberTransport: true
       transportOptions: {}
       log: require('util').log
 
@@ -57,10 +58,11 @@ listen = (opts) ->
 
   opts.socketio or= {}
   for key, val of default_opts.socketio
-    opts.socketio[key] or= default_opts.socketio[key]
+    if opts.socketio[key] is undefined
+      opts.socketio[key] = default_opts.socketio[key]
 
   for key, val of default_opts
-    opts[key] or= default_opts[key]
+    opts[key] = default_opts[key] if opts[key] is undefined
 
 
   server = opts.server
