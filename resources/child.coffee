@@ -1,3 +1,9 @@
+if typeof window.console is 'undefined'
+  window.console =
+    log: (->)
+    error: (->)
+    dir: (->)
+
 console.log 'Hadoken child loaded'
 
 # TODO
