@@ -19,7 +19,10 @@
       method is called.
     - Figure out whether there is any reason not to set document.domain
       to the second level domain from the request's host header
-
+    - consider automatically setting document.domain in parent.js. What
+      will that break?
+    
+    
 ###
 
 http = require 'http'
@@ -114,7 +117,7 @@ class Hadoken
   _makeParentJs: ->
     parent_coffee = fs.readFileSync @_resource('parent.coffee'), 'utf8'
     js = coffee.compile parent_coffee
-    js = @_getDomainPolicySnippet() + @_getClientConfigSnippet() + js
+    js = @_getClientConfigSnippet() + js
     return @_wrapJs js
 
   # Generate iframe html from template in `resources/receiver.html`
@@ -122,8 +125,7 @@ class Hadoken
     template = fs.readFileSync @_resource('receiver.html'), 'utf8'
 
     # 1. configure client
-    script = @_getDomainPolicySnippet()
-    script += @_getClientConfigSnippet()
+    script = @_getClientConfigSnippet()
 
     # 2. load dependencies
     if @options.enableSocket
@@ -134,8 +136,9 @@ class Hadoken
     # 3. bootstrap!
     receiver_coffee = fs.readFileSync @_resource('child.coffee'), 'utf8'
     script += coffee.compile receiver_coffee
-    
-    return template.replace '{SCRIPT}', @_wrapJs(script)
+    script = @_wrapJs script
+    script = @_getDomainPolicySnippet() + script
+    return template.replace '{SCRIPT}', script
 
 
   # Returns a sanitized path relative to root endpoint.
@@ -186,7 +189,7 @@ class Hadoken
   _wrapJs: (js) -> "(function(){#{js}})();"
   _getDomainPolicySnippet: ->
     if @options.baseDomain
-      return "document.domain = '#{@options.baseDomain}';"
+      return "document.domain = '#{@options.baseDomain}';\n"
     else return ''
 
   _getClientConfigSnippet: ->

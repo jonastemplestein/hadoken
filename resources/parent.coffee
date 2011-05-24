@@ -15,5 +15,3 @@ ifrm.style.display = "none"
 src = "IFRAME_URL"
 ifrm.setAttribute "src", src
 document.body.appendChild ifrm
-
-console.log "Hadoken: #{_hadoken_conf.globalVariable} parent loaded"
