@@ -1,12 +1,14 @@
-console.log 'Hadoken child loaded'
+# GHETTO templating FTW
+hadoken = window.parent[_hadoken_conf.globalVariable] or= {}
 
-# TODO
-# - hadoken should be a proxy for socket.io.
-# - notify parent window that the connection is established
-window.parent.hadoken or= {}
-hadoken = window.parent.hadoken
-socket = hadoken.socket = new io.Socket hadoken.host,
-  port: hadoken.port
-socket.connect()
+if _hadoken_conf.enableSocket
+  socket = hadoken.socket = new io.Socket document.location.hostname, \ 
+      _hadoken_conf.socketClientOptions
+  cookie = hadoken.cookie = document.cookie
 
-socket.on 'connect', -> hadoken.init() if hadoken.init
+if _hadoken_conf.enableAjax
+  hadoken.ajax = window.reqwest
+
+if typeof hadoken.init is 'function'
+  hadoken.initialized = true
+  hadoken.init()
